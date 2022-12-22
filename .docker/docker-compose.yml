@@ -1,0 +1,54 @@
+version: '3.6'
+
+networks:
+  project:
+    driver: bridge
+
+services:
+  mysql:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./shared/logs/mysql:/var/log/mysql
+      - ./shared/data/mysql:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT}:3306"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    networks:
+      - project
+
+  php:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    volumes:
+      - ${PROJECT_DIR}:/var/www/project
+      - ./shared/logs/php:/var/log/php/
+    ports:
+      - "9000:9000"
+    networks:
+      - project
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - php
+    volumes:
+      - ${PROJECT_DIR}:/var/www/project
+      - ./shared/logs/nginx:/var/log/nginx
+    ports:
+      - "80:80"
+    networks:
+      - project
