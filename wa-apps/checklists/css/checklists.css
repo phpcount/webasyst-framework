@@ -13,7 +13,7 @@
 .c-list ul.menu-v span.c-completed-when { display: none; }
 .c-list ul.menu-v span.c-completed-by { display: none; font-weight: bold; }
 .c-list ul.menu-v li.c-done { margin-bottom: 3px; }
-.c-list ul.menu-v li.c-done span.c-item-name  { color: #aaa; text-decoration: line-through; font-size: 0.8em; }
+.c-list ul.menu-v li.c-done span.c-item-name { color: #aaa; text-decoration: line-through; font-size: 0.8em; }
 .c-list ul.menu-v li.c-done span.c-completed-when  { display: inline; }
 .c-list ul.menu-v li.c-done span.c-completed-by  { display: inline; }
 .c-list ul.menu-v li.c-add-form { padding-left:13px; padding-bottom: 10px; display: none; }
@@ -23,32 +23,45 @@
 .c-list ul.menu-v li a.c-delete-item { display: none; }
 .c-list ul.menu-v li a.c-edit-item { display: none; }
 .c-list ul.menu-v li a.c-delete-item { display: none; }
+.c-list ul.menu li.item { margin: 30px 0; padding-left: 18px; }
 .c-list.cl-editable ul.menu-v li:hover a.c-edit-item { display: inline; opacity: 0.5; }
 .c-list.cl-editable ul.menu-v li:hover a.c-delete-item { display: inline; opacity: 0.5; }
 .c-list.cl-editable ul.menu-v li:hover a.c-edit-item:hover { opacity: 1.0; }
 .c-list.cl-editable ul.menu-v li:hover a.c-delete-item:hover { opacity: 1.0; }
 
 .c-settings ul.menu-h li a { padding: 8px 10px; }
+.c-settings ul.chips li a { padding: 10px 14px; }
 .c-list-icons { max-width: 350px; }
 .c-list-icons ul.menu-h { padding-bottom: 10px; }
 .c-list-icons ul.menu-h li { margin: 0; }
 .c-list-icons ul.menu-h li a { border: 3px solid transparent; }
 .c-list-icons ul.menu-h li a i.icon16 { margin: 0; }
 .c-list-icons ul.menu-h li.selected a { border: 3px solid #FDDA3B; background: #ffd; }
+a[icon] svg { min-width: 15px; max-width: 15px; }
 
-.c-white { background: #fff; }
-.c-gray { background: #eee; }
-.c-yellow { background: #ffc; }
-.c-green { background: #dfc; }
-.c-blue { background: #cef; }
-.c-red { background: #fcc; }
-.c-purple { background: #edf; }
+.c-white, ul.chips li a.c-white { background: #fff; }
+.c-gray, ul.chips li a.c-gray { background: #eee; }
+.c-yellow, ul.chips li a.c-yellow { background: #ffc; }
+.c-green, ul.chips li a.c-green { background: #dfc; }
+.c-blue, ul.chips li a.c-blue { background: #cef; }
+.c-red, ul.chips li a.c-red { background: #fcc; }
+.c-purple, ul.chips li a.c-purple { background: #edf; }
 
-ul.menu-h li.c-white { border: 1px solid #ddd; }
-ul.menu-h li.c-gray { border: 1px solid #ccc; }
-ul.menu-h li.c-yellow { border: 1px solid #dda; }
-ul.menu-h li.c-green { border: 1px solid #ad9; }
-ul.menu-h li.c-blue { border: 1px solid #acd; }
-ul.menu-h li.c-red {  border: 1px solid #daa; }
-ul.menu-h li.c-purple { border: 1px solid #cbd; }
 
+ul.menu-h li.c-white, ul.chips .c-white { border: 1px solid #ddd; }
+ul.menu-h li.c-gray, ul.chips .c-gray { border: 1px solid #ccc; }
+ul.menu-h li.c-yellow, ul.chips .c-yellow { border: 1px solid #dda; }
+ul.menu-h li.c-green, ul.chips .c-green { border: 1px solid #ad9; }
+ul.menu-h li.c-blue, ul.chips .c-blue { border: 1px solid #acd; }
+ul.menu-h li.c-red, ul.chips .c-red {  border: 1px solid #daa; }
+ul.menu-h li.c-purple, ul.chips .c-purple { border: 1px solid #cbd; }
+
+.fields .field > .value > ul.custom-chips { margin-top: 0; width: 360px; }
+.fields .field > .value > ul.custom-chips li { margin-top: 0.5rem; }
+.indent-icon { padding-right: 0.25rem !important; }
+.edit-list .state-error-hint { margin-bottom: -44px; }
+
+/* Dark mode */
+html[data-theme='dark'] #wa .c-list { background: var(--background-color); }
+html[data-theme='dark'] #wa { background: var(--background-color-blank); }
+/* Dark mode */

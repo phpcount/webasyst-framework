@@ -7,4 +7,5 @@ return array(
     'version'=>'1.0.11',
     'critical'=>'1.0.0',
     'vendor' => 'webasyst',
+    'ui' => '1.3,2.0',
 );

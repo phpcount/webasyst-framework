@@ -1,11 +1,17 @@
 /*
  * Script for list settings page.
  */
-(function() {
+(function () {
+  var isNewUI = function () { return 'whichUI' in window && window.whichUI === '2.0' }
 	// Select color
 	$('#colors a').click(function(e) {
 		var self = $(this);
-		$('#cl-core .block.double-padded.c-list').attr('class', 'block double-padded c-list '+self.parent().attr('class'));
+    if (isNewUI()) {
+      $('#cl-core .c-list').attr('class', 'box rounded custom-p-20 c-list ' + self.attr('class'));
+    } else {
+      $('#cl-core .c-list').attr('class', 'block double-padded c-list ' + self.parent().attr('class'));
+    }
+
 		if($(e.target).is(':radio')) {
 			return true;
 		}
@@ -45,28 +51,49 @@
 		if ($('#submit').attr('disabled')) {
 			return false;
 		}
+
 		var name = $('#name').val();
-		if (!name) {
-			alert($.cl.loc.empty_name);
+		if (!name || !name.trim()) {
+      if (isNewUI()) {
+        validListEdit({
+          name: {
+            selector: '#name',
+            error: {
+              selector: '#name-error',
+              message: $.cl.loc.empty_name
+            }
+          }
+        });
+      } else {
+        alert($.cl.loc.empty_name);
+      }
+
 			return false;
 		}
 
 		var icon = $('#icon').val();
 
-		if (icon.length < 8 || icon.substr(0, 7) != 'http://') {
-			if ($('#icons li.selected i').length > 0) {
-				icon = $('#icons li.selected i').attr('class').replace('icon16 ', '');
-			} else {
-				icon = 'c-white';
-			}
-		}
+    if (isNewUI()) {
+      icon = $('#icons li.selected a').attr('icon');
+    } else {
+      if (icon.length < 8 || icon.substr(0, 7) != 'http://') {
+        if ($('#icons li.selected i').length > 0) {
+          icon = $('#icons li.selected i').attr('class').replace('icon16 ', '');
+        } else {
+          icon = 'c-white';
+        }
+      }
+    }
 
 		$('#submit').attr('disabled', true).parent().append($('<i class="icon16 loading">'));
 
+    var color_class = isNewUI()
+      ? $('#colors :radio:checked').parent().attr('class')
+      : $('#colors :radio:checked').parent().parent().attr('class');
 		var data = {
 			name: name,
 			icon: icon,
-			color_class: $('#colors :radio:checked').parent().parent().attr('class')
+      color_class
 		};
 		if ($.cl.list_id) {
 			data.id = $.cl.list_id;
@@ -100,4 +127,19 @@
 	}
 
 	$('#name').focus();
+
+  var validListEdit = function (fields) {
+    for (fieldName in fields) {
+      var field = fields[fieldName];
+      $(field.selector).addClass('state-error');
+      $(field.error.selector).text(field.error.message).removeClass('hidden');
+    }
+  }
+
+  $('#name').change(function () {
+    if (this.value && this.value.trim()) {
+      $(this).removeClass('state-error');
+      $('#name-error').text('').addClass('hidden');
+    }
+  })
 })();

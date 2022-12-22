@@ -1,7 +1,7 @@
 {*
   * List settings page.
   *}
-<div class="edit-list box rounded custom-p-20 c-list {$list.color_class}">
+<div class="block double-padded c-list {$list.color_class}">
 	{if !$list.id}
 		<h1>[`New list`]</h1>
 	{/if}
@@ -10,8 +10,7 @@
 		<div class="field">
 			<div class="name bold">[`List name`]</div>
 			<div class="value bold">
-				<input id="name" class="long" value="{$list.name|escape}" type="text">
-                <div id="name-error" class="state-error-hint hidden"></div>
+				<input id="name" class="large" value="{$list.name|escape}" type="text">
 				<br>
 				<br>
 			</div>
@@ -19,10 +18,9 @@
 		<div class="field">
 			<div class="name">[`Color`]</div>
 			<div class="value c-settings">
-
-				<ul class="chips custom-chips menu-h" id="colors">
+				<ul class="menu-h" id="colors">
 					{foreach $colors as $c}
-						<li><a href="#" class="{$c}"><input name="c-list-settings-color" type="radio" value="{$c}"{if $c == $list.color_class} checked="true"{/if}></a></li>
+						<li class="{$c}"><a href="#"><input name="c-list-settings-color" type="radio" value="{$c}"{if $c == $list.color_class} checked="true"{/if}></a></li>
 					{/foreach}
 				</ul>
 			</div>
@@ -31,20 +29,19 @@
 		<div class="field">
 			<div class="name">[`Icon`]</div>
 			<div class="value c-list-icons">
-				<ul class="chips icons custom-chips custom-mb-20" id="icons">
+				<ul class="menu-h" id="icons">
 					{foreach $icons as $i}
-						<li{if $list.icon == $i} class="selected"{/if}><a href="#" icon="{$i}"><i class="fas fa-{$i}"></i></a></li>
+						<li{if $list.icon == $i} class="selected"{/if}><a href="#"><i class="icon16 {$i}"></i></a></li>
 					{/foreach}
 				</ul>
-				<span class="small">
-                    <p class="custom-mb-8">[`Or specify image URL (must be exactly 16x16 pixels):`]</p>
-					<input value="{if substr($list.icon, 0, 7) == 'http://'}{$list.icon}{else}http://{/if}" class="long" type="text" id="icon">
+				<span class="small">[`Or specify image URL (must be exactly 16x16 pixels):`]<br>
+					<input value="{if substr($list.icon, 0, 7) == 'http://'}{$list.icon}{else}http://{/if}" type="text" id="icon">
 				</span>
 			</div>
 		</div>
 	  </div>
 	  <div class="field-group">
-		<div class="field custom-mt-32">
+		<div class="field">
 			<div class="value submit">
 				<input class="button green" id="submit" value="[`Save`]" type="button">
 				{if $list.id}
@@ -71,3 +68,4 @@
 	};
 </script>
 <script type="text/javascript" src="{$wa_app_static_url}js/editor.js?{$wa->version()}"></script>
+

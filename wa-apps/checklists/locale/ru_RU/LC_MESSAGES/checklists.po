@@ -91,3 +91,8 @@ msgstr "Полный доступ"
 msgid "Available lists"
 msgstr "Доступные списки"
 
+msgid "OK"
+msgstr "ОК"
+
+msgid "Cancel"
+msgstr "Отмена"

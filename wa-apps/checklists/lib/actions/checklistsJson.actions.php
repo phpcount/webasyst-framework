@@ -109,6 +109,11 @@ class checklistsJsonActions extends waJsonActions
             'icon' => waRequest::post('icon', 'notebook'),
         );
 
+        if (wa()->whichUI() === '2.0') {
+            $icons = require dirname(__DIR__) . '/enums/icons.enums.php';
+            $list['icon'] = array_flip($icons)[$list['icon']];
+        }
+
         if(strlen($list['name']) <= 0) {
             throw new waException('No name specified.');
         }
@@ -204,4 +209,3 @@ class checklistsJsonActions extends waJsonActions
         $this->response = 'done';
     }
 }
-

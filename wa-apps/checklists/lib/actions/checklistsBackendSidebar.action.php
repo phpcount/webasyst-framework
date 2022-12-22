@@ -9,11 +9,25 @@ class checklistsBackendSidebarAction extends waViewAction
     {
         $lm = new checklistsListModel();
         $lists = $lm->getAllowed();
+
+        if (wa()->whichUI() === '2.0') {
+            $icons = require dirname(__DIR__) . '/enums/icons.enums.php';
+        }
+
         foreach($lists as $id => &$list) {
-            if (strtolower(substr($list['icon'], 0, 7)) == 'http://') {
-                $list['icon'] = '<i class="icon16" style="background-image:url('.htmlspecialchars($list['icon']).')"></i>';
+
+            if (wa()->whichUI() === '2.0') {
+                if (strtolower(substr($list['icon'], 0, 7)) == 'http://') {
+                    $list['icon'] = '<i class="icon style="background-image:url(' . htmlspecialchars($list['icon']) . ')"></i>';
+                } else {
+                    $list['icon'] = '<i class="icon fas fa-' . @$icons[$list['icon']] . '"></i>';
+                }
             } else {
-                $list['icon'] = '<i class="icon16 '.$list['icon'].'"></i>';
+                if (strtolower(substr($list['icon'], 0, 7)) == 'http://') {
+                    $list['icon'] = '<i class="icon16" style="background-image:url(' . htmlspecialchars($list['icon']) . ')"></i>';
+                } else {
+                    $list['icon'] = '<i class="icon16 ' . $list['icon'] . '"></i>';
+                }
             }
         }
 
@@ -26,4 +40,3 @@ class checklistsBackendSidebarAction extends waViewAction
         $this->view->assign('can_add_lists', $this->getRights('add_list'));
     }
 }
-

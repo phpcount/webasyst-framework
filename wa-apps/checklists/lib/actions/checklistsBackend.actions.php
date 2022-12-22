@@ -71,6 +71,7 @@ class checklistsBackendActions extends waViewActions
     public function EditorAction()
     {
         $id = waRequest::request('id', 0, 'int');
+        $icons = require dirname(__DIR__) . '/enums/icons.enums.php';
         if ($id) {
             if($this->getRights('list.'.$id) <= 1) {
                 throw new waRightsException('Access denied.');
@@ -80,6 +81,8 @@ class checklistsBackendActions extends waViewActions
                 throw new waException('List does not exist.');
             }
             $this->layout->setTitle($list['name']);
+            $list['icon'] = $icons[$list['icon']];
+
         } else {
             if(!$this->getRights('add_list')) {
                 throw new waRightsException('Access denied.');
@@ -88,50 +91,13 @@ class checklistsBackendActions extends waViewActions
                 'id' => '',
                 'name' => '',
                 'color_class' => 'c-white',
-                'icon' => 'notebook',
+                'icon' => wa()->whichUI() === '2.0' ? 'book' : 'notebook',
                 'count' => 0,
             );
         }
         $this->view->assign('list', $list);
 
-        $this->view->assign('icons', array(
-            'notebook',
-            'lock',
-            'lock-unlocked',
-            'broom',
-            'star',
-            'livejournal',
-            'contact',
-            'lightning',
-            'light-bulb',
-            'pictures',
-            'reports',
-            'books',
-            'marker',
-            'lens',
-            'alarm-clock',
-            'animal-monkey',
-            'anchor',
-            'bean',
-            'car',
-            'disk',
-            'cookie',
-            'burn',
-            'clapperboard',
-            'bug',
-            'clock',
-            'cup',
-            'home',
-            'fruit',
-            'luggage',
-            'guitar',
-            'smiley',
-            'sport-soccer',
-            'target',
-            'medal',
-            'phone',
-            'store',
-        ));
+        $this->view->assign('icons', wa()->whichUI() === '2.0' ? array_values($icons) : array_keys($icons) );
 
         $this->view->assign('colors', array(
             'c-white',
@@ -144,4 +110,3 @@ class checklistsBackendActions extends waViewActions
         ));
     }
 }
-

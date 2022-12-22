@@ -2,6 +2,7 @@
  * Script for list items page.
  */
 (function(){
+  var isNewUI = function() { return 'whichUI' in window && window.whichUI === '2.0' }
 	/** Update unchecked list items count in sidebar */
 	var updateCount = function() {
 		$('#cnt'+$.cl.list_id).text($('#c-checklist :checkbox:not(:checked)').length);
@@ -15,18 +16,37 @@
 		// when a new `li.item` is inserted, all `rel`s of next items are increased by 1.
 		// Initial `rel` is equal to the `sort` parameter of an item.
 		//
-
 		where = where || 'top';
-		var li =	'<li rel="'+item.sort+'" class="item'+(item.done ? ' c-done' : '')+'">'+
-						'<label>'+
-							'<input type="checkbox" name="'+item.id+'" class="c-item-checkbox"'+(item.done ? ' checked="true"' : '')+'> '+
-							'<span class="c-item-name">'+item.name+'</span>'+
-						'</label>'+
-						(item.when ? '<span class="hint c-completed-when">'+item.when+'</span>' : '')+
-						(item.who ? '<span class="hint c-completed-by">'+item.who+'</span>' : '')+
-						' <a href="#" class="c-edit-item" title="'+$.cl.loc.edit+'"><i class="icon10 edit"></i></a>'+
-						' <a href="#" class="c-delete-item" title="'+$.cl.loc.del+'"><i class="icon10 no"></i></a>'+
-					'</li>';
+    var li = '<li rel="' + item.sort + '" class="item' + (item.done ? ' c-done' : '') + '">' +
+      '<label>' +
+      '<input type="checkbox" name="' + item.id + '" class="c-item-checkbox"' + (item.done ? ' checked="true"' : '') + '> ' +
+      '<span class="c-item-name">' + item.name + '</span>' +
+      '</label>' +
+      (item.when ? '<span class="hint c-completed-when">' + item.when + '</span>' : '') +
+      (item.who ? '<span class="hint c-completed-by">' + item.who + '</span>' : '') +
+      ' <a href="#" class="c-edit-item" title="' + $.cl.loc.edit + '"><i class="icon10 edit"></i></a>' +
+      ' <a href="#" class="c-delete-item" title="' + $.cl.loc.del + '"><i class="icon10 no"></i></a>' +
+      '</li>';
+
+    if (isNewUI()) {
+        li = '<li rel="' + item.sort + '" class="item' + (item.done ? ' c-done' : '') + '">' +
+          '<label style="font-size: 1.3rem;" class="custom-mr-4">' +
+            '<span class="wa-checkbox">' +
+              '<input type="checkbox" class="c-item-checkbox" name="' + item.id + '"' + (item.done ? ' checked="true"' : '') + '> ' +
+                '<span>' +
+                  '<span class="icon">' +
+                  '<i class="fas fa-check"></i>' +
+                  ' </span>' +
+                '</span>' +
+            '</span>' +
+            '<span class="c-item-name custom-pl-4">' + item.name + '</span>' +
+          '</label>' +
+          (item.when ? '<span class="hint c-completed-when">' + item.when + '</span>' : '') +
+          (item.who ? '<span class="hint c-completed-by">' + item.who + '</span>' : '') +
+          ' <a href="#" class="c-edit-item js-show-edit-dialog" title="' + $.cl.loc.edit + '"><i class="fas fa-edit edit"></i></a>' +
+          ' <a href="#" class="c-delete-item" title="' + $.cl.loc.del + '"><i class="fas fa-times-circle no"></i></a>' +
+          '</li>';
+    }
 
 		// li will be inserted inserted before this item
 		var insertBefore = null;
@@ -201,27 +221,50 @@
 		}, 'json');
 	});
 
+  var saveEditItems = function (targetLI, newValue) {
+    var oldValue = targetLI.find('.c-item-name').text();
+
+    targetLI.find('.c-item-name').text(newValue);
+
+    if (oldValue === newValue) {
+      return;
+    }
+
+    $.post('?module=json&action=itemsave', {
+      id: targetLI.find(':checkbox').attr('name'),
+      name: newValue
+    }, function (item) {
+      item = item.data;
+      targetLI.remove();
+      insertItem(item);
+    }, 'json'
+    );
+  }
+
 	// edit items
 	$('.c-edit-item', $('#c-checklist')[0]).die('click').live('click', function() {
 		if (!$.cl.can_edit) {
 			return false;
 		}
-		var li = $(this).parents('#c-checklist li');
-		var newValue = prompt($.cl.loc.prompt, li.find('.c-item-name').text());
-		if (!newValue) {
-			return false;
-		}
 
-		li.find('.c-item-name').text(newValue);
-		$.post('?module=json&action=itemsave', {
-				id: li.find(':checkbox').attr('name'),
-				name: newValue
-			}, function(item) {
-				item = item.data;
-				li.remove();
-				insertItem(item);
-			}, 'json'
-		);
+		var li = $(this).parents('#c-checklist li');
+    var text = li.find('.c-item-name').text();
+
+    if (isNewUI()) {
+      editItemDialog({
+        text
+      }, function (form) {
+        saveEditItems(li, form[0].value)
+      });
+    } else {
+        var newValue = prompt($.cl.loc.prompt, text);
+        if (!newValue) {
+          return false;
+        }
+
+      saveEditItems(li, newValue)
+    }
+
 		return false;
 	});
 
@@ -276,19 +319,34 @@
 		}
 	}
 
+  var deleteList = function () {
+    $.waLoading().show(500);
+    $(this).find('.icon16').removeClass('delete').addClass('loading');
+    $.post('?module=json&action=deletelist', { id: $.cl.list_id }, function () {
+      window.location.search = '';
+      $.waLoading().done();
+    });
+  }
 	// delete list button
 	$('#deletelist').click(function() {
 		if (!$.cl.can_edit) {
 			return false;
 		}
 
-		if (!confirm($.cl.loc.delconfirm.replace('%s', $.trim($('#name span').text())))) {
-			return false;
-		}
-		$(this).find('.icon16').removeClass('delete').addClass('loading');
-		$.post('?module=json&action=deletelist', {id: $.cl.list_id}, function() {
-			window.location.search = '';
-		});
+    var textConfirm = $.cl.loc.delconfirm.replace('%s', $.trim($('#name span').text()));
+
+    if (isNewUI()) {
+      deleteListDialog({ textConfirm }, function () {
+        deleteList.call(this);
+      })
+    } else {
+      if (!confirm(textConfirm)) {
+        return false;
+      }
+
+      deleteList.call(this);
+    }
+
 		return false;
 	});
 
@@ -336,4 +394,55 @@
 				return false;
 		}
 	});
+
+  var editItemDialog = function (payload, calle) {
+    var $header = $('<div><h5>' + $.cl.loc.prompt + '</h5><a href="#" class="dialog-close js-close-dialog"><i class="fas fa-times"></i></a></div>');
+    var $content = $('<div><form name="dialog-delete"><input type="text" class="long" name="name" value="' + payload.text  + '"></form></div>');
+    var $footer = $('<div class=\"flexbox\" style=\"justify-content: flex-end;\"><input class="button js-submit-form" type="submit" value="' + $.cl.loc.save + '"></div>');
+    var $form = $content.find('form');
+
+    var dialog = $.waDialog({
+      header: $header,
+      content: $content,
+      footer: $footer,
+      onClose: function (dialog) {
+        dialog.hide();
+        return false;
+      }
+    });
+
+    $form.on('submit', function (event) {
+      event.preventDefault();
+      if (typeof calle === "function") {
+        calle($(this).serializeArray());
+      }
+      dialog.hide();
+    });
+
+    $footer.find('.js-submit-form').on('click', function () {
+      $form.trigger('submit');
+    });
+  }
+
+  var deleteListDialog = function (payload, calle) {
+    var $header = $('<div><h5>' + payload.textConfirm + '</h5></div>');
+    var $footer = $('<div class=\"flexbox\" style=\"justify-content: flex-end;\"><input class="button js-submit-form" type="submit" value="' + $.cl.loc.ok + '"><input class="button js-close-dialog" type="submit" value="' + $.cl.loc.cancel + '"></div>');
+
+    var dialog = $.waDialog({
+      header: $header,
+      footer: $footer,
+      onClose: function (dialog) {
+        dialog.hide();
+        return false;
+      }
+    });
+
+    $('.js-submit-form').click(function (event) {
+      event.preventDefault();
+      if (typeof calle === "function") {
+        calle($(this).serializeArray());
+      }
+      dialog.hide();
+    });
+  }
 })();

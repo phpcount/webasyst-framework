@@ -1,41 +1,44 @@
 {*
  * List items page.
  *}
-<div class="block double-padded c-list {$list.color_class}{if $can_edit} cl-editable{/if}">
-	{if $can_edit}
-		<ul class="menu-h float-right">
-			<li>
-				<a href="?action=editor&id={$list.id}"><i class="icon16 settings"></i>[`List settings`]</a>
-			</li>
-			<li>
-				<a href="#" id="deletelist"><i class="icon16 delete"></i>[`Delete`]</a>
-			</li>
-		</ul>
-	{/if}
-
-	<h1 id="name">
-		<span>{$list.name|escape}</span>
-		{if $can_edit}
-			<a class="inline-link" id="add" href="#"><i class="icon16 add"></i></a>
-		{/if}
-	</h1>
-
-	<ul class="menu-v">
-		{if $can_edit}
-			<li class="c-add-form" id="c-add-form">
-				<input type="text">
-				<input type="submit" value="[`Add`]">
-			</li>
-		{/if}
-		<li class="c-start-over-form" id="c-start-over-form" style="display:none">
-			<input type="submit" value="[`Start over`]">
-		</li>
-	</ul>
-
-	<ul class="menu-v" id="c-checklist">
-	</ul>
-
-	<div class="clear-left"></div>
+<div class="box rounded custom-p-20 c-list {$list.color_class}{if $can_edit} cl-editable{/if}">
+    <div class="flexbox">
+        <div class="left-box wide">
+            <h1 id="name" class="custom-mb-40">
+                <span>{$list.name|escape}</span>
+                {if $can_edit}
+                <!-- <a id="add" href="#"><i class="icon add"></i></a> -->
+                <a id="add" href="#"><i class="fas fa-plus-circle state-success-hint"></i></a>
+                {/if}
+            </h1>
+            <ul class="menu-v menu">
+                {if $can_edit}
+                <li class="c-add-form custom-ml-4" id="c-add-form">
+                    <input type="text" class="small">
+                    <button type="submit">[`Add`]</button>
+                </li>
+                {/if}
+                <li class="c-start-over-form" id="c-start-over-form" style="display:none">
+                    <button type="submit" class="orange">[`Start over`]</button>
+                </li>
+            </ul>
+        </div>
+        <div class="right-box">
+            {if $can_edit}
+            <ul class="chips">
+                <li>
+                    <a href="?action=editor&id={$list.id}"><i class="fas fa-cog indent-icon"></i>[`List settings`]</a>
+                </li>
+                <li>
+                    <a href="#" id="deletelist"><i class="fas fa-minus-circle indent-icon"></i>[`Delete`]</a>
+                </li>
+            </ul>
+            {/if}
+        </div>
+    </div>
+    <div class="content">
+        <ul class="menu-v menu bordered" id="c-checklist"></ul>
+    </div>
 </div>
 <script type="text/javascript">
 	// data for script have to be generated inside template
@@ -48,9 +51,11 @@
 			'del': "[`Delete`]",
 			'max': "[`Max 255 characters`]",
 			'prompt': "[`Edit list item`]",
-			'delconfirm': "[`List “%s” will be deleted permanently. Delete?`]"
+			'delconfirm': "[`List “%s” will be deleted permanently. Delete?`]",
+            'ok': "[`OK`]",
+            'cancel': "[`Cancel`]",
+            'save': "[`Save`]",
 		}
 	};
 </script>
 <script type="text/javascript" src="{$wa_app_static_url}js/list.js?{$wa->version()}"></script>
-
